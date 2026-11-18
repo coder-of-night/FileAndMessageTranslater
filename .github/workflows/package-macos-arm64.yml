@@ -1,0 +1,47 @@
+name: Package macOS Apple Silicon
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  macos-arm64:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Confirm Apple Silicon runner
+        run: |
+          test "$(uname -m)" = "arm64"
+          node -e "if (process.arch !== 'arm64') process.exit(1); console.log(process.version, process.arch)"
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - name: Check large-file streaming
+        run: LARGE_TRANSFER_TEST=1 npm test -- --testNamePattern="larger than 1 GiB"
+      - name: Build Apple Silicon ZIP
+        run: npm run package:mac:arm64
+      - name: Verify architecture and launch packaged app
+        run: |
+          app="$(find release-macos-arm64 -type d -name 'LAN Chat.app' -print -quit)"
+          test -n "$app"
+          executable="$app/Contents/MacOS/LAN Chat"
+          test -x "$executable"
+          file "$executable"
+          architectures="$(lipo -archs "$executable")"
+          echo "Electron executable architectures: $architectures"
+          test "$architectures" = "arm64"
+          PACKAGED_APP="$executable" npx vitest run tests/packaged-connection.test.ts --reporter=verbose
+          archive="$(find release-macos-arm64 -maxdepth 1 -type f -name '*.zip' -print -quit)"
+          test -n "$archive"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LAN-Chat-macOS-Apple-Silicon
+          path: release-macos-arm64/*.zip
+          if-no-files-found: error
+          retention-days: 30

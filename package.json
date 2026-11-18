@@ -1,0 +1,62 @@
+{
+  "name": "lan-chat-file-transfer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Secure peer-to-peer LAN messaging and file transfer",
+  "main": "./out/main/index.js",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "package:win": "npm run build && electron-builder --win dir",
+    "package:mac": "npm run build && electron-builder --mac --arm64",
+    "package:mac:arm64": "npm run build && electron-builder --mac zip --arm64 --config.directories.output=release-macos-arm64"
+  },
+  "dependencies": {
+    "image-size": "^2.0.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "selfsigned": "^2.4.1",
+    "ws": "^8.18.3",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.30",
+    "@types/react": "^18.3.23",
+    "@types/react-dom": "^18.3.7",
+    "@types/ws": "^8.18.1",
+    "@vitejs/plugin-react": "^4.7.0",
+    "electron": "^45.3.1",
+    "electron-builder": "^26.0.12",
+    "electron-vite": "^3.0.0",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
+    "vitest": "^5.1.0"
+  },
+  "overrides": {
+    "minimatch": "^11.0.8"
+  },
+  "build": {
+    "appId": "com.internal.lanchat",
+    "productName": "LAN Chat",
+    "electronDist": "node_modules/electron/dist",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "out/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "dir"
+    },
+    "mac": {
+      "target": [
+        "zip",
+        "dmg"
+      ],
+      "category": "public.app-category.social-networking"
+    }
+  }
+}

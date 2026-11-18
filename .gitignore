@@ -1,0 +1,14 @@
+node_modules/
+out/
+release/
+release*/
+release-connection-fix/
+release-ux/
+release-macos-arm64/
+coverage/
+dist/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+.env
+.DS_Store
